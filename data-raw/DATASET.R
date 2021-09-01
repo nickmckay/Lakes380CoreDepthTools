@@ -1,6 +1,7 @@
 library(dplyr)
 
 getRoiTop <- function(secTop,foamTop,hsTop,hsRoiTop){
+  if(is.na(foamTop)){foamTop <- 0}
   if(is.na(hsRoiTop)){
     roiTop <- secTop + foamTop
     topSource <- "non-HSI"
@@ -45,11 +46,15 @@ getRoiBot <- function(secTop,secLenField,secLenLab,foamBot,hsTop,hsRoiBot){
 }
 
 #also extract which (HS or not) was used.
+m_to_cm <- function(m){
+  return(as.numeric(m) * 100)
+}
 
 coreData <- readxl::read_xlsx(
   system.file("extdata", "Lakes380Cores.xlsx", package = "Lakes380CoreDepthTools"),
   col_types = "text"
-)
+) %>%
+  mutate(across(contains("Section") & -any_of("Section Name"),m_to_cm))
 
 roiTop <- select(coreData,
                  secTop = `Section Top`,
@@ -70,6 +75,34 @@ roiBot <- select(coreData,
   purrr::pmap_dfr(.f = getRoiBot)
 
 
+key <- select(coreData,`Section Name`) %>%
+  bind_cols(roiTop,roiBot) %>%
+  mutate(sectionLength = roiBot - roiTop,
+         coreName = stringr::str_sub(`Section Name`,1,-3),
+         sectionNumber = as.numeric(stringr::str_sub(`Section Name`,-1,-1))) %>%
+  arrange(sectionNumber)
 
 
-usethis::use_data(DATASET, overwrite = TRUE)
+secBotDblf <- secTopDblf <- matrix(NA, nrow = nrow(key))
+
+for(i in 1:nrow(key)){
+  if(key$sectionNumber[i] == 1){
+    secTopDblf[i] <- 0
+  }else{
+    prevSecNum <- key$sectionNumber[i]-1
+    prevI <- which(key$sectionNumber == prevSecNum & key$coreName == key$coreName[i])
+    if(length(prevI) == 0){
+      secTopDblf[i] <- NA
+    }else{
+    secTopDblf[i] <- secBotDblf[prevI]
+    }
+  }
+  secBotDblf[i] <- key$sectionLength[i]+secTopDblf[i]
+}
+
+finalKey <- key %>%
+  bind_cols(data.frame(secTopDblf = secTopDblf, secBotDblf = secBotDblf)) %>%
+  arrange(coreName, sectionNumber)
+
+
+usethis::use_data(finalKey, overwrite = TRUE,internal = TRUE)
