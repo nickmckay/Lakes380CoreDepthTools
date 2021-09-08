@@ -73,7 +73,7 @@ listCoreSectionNames <- function(){
 
 #' Find a core section name
 #'
-#' @param corename_guess
+#' @param corename_guess A string that is a guess at a corename
 #'
 #' @return Potential matches of core names given a guess
 #' @export
