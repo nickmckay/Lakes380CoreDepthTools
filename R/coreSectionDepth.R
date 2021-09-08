@@ -10,7 +10,7 @@
 #'
 #' @examples
 #'
-#' dblf <- coreSection_to_dblf("L380_DUNCA3_LC4U_1",50)
+#' coreSection_to_dblf("L380_DUNCA3_LC4U_1",50:60)
 #'
 coreSection_to_dblf <- function(corename,cm){
 

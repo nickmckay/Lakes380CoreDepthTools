@@ -29,7 +29,7 @@ All of the depths in the package, both inputs and outputs should be in cm. It sh
 
 If you're having trouble getting the right core name, try the helper functions `findCoreSectionName()` where you can input a guess and it will give you suggestions, or `listCoreSectionNames()` to see all the known names. 
 
-There is basic help documentation for these functions, see [reference](). 
+There is basic help documentation for these functions, see [reference](https://nickmckay.github.io/Lakes380CoreDepthTools/reference/index.html). 
 
 
 
