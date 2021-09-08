@@ -7,7 +7,7 @@
 findCoreSectionName(corename_guess)
 }
 \arguments{
-\item{corename_guess}{}
+\item{corename_guess}{A string that is a guess at a corename}
 }
 \value{
 Potential matches of core names given a guess
