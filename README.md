@@ -18,10 +18,10 @@ and then load it with
 
 `library(Lakes380CoreDepthTools)`
 
-Currently, the functionality is pretty basic. To convert core-section depth to depth below lake floor, use the function `coreSection_to_dblf()` with the corename and depth below the top of the core liner. You can run it for one or more depths. Here is an example:
+Currently, the functionality is pretty basic. To convert core-section depth to depth below lake floor, use the function `coreSection_to_dblf()` with the corename and depth below the top of the core liner. You can run it for one or more depths. Here is an example that will calculate depth below lake floor for 20 to 30 cm below the core liner in core L380_DUNCA3_LC4U_2:
 
 
-`dblf <- coreSection_to_dblf("L380_DUNCA3_LC4U_1",50:110)`
+`dblf <- coreSection_to_dblf("L380_DUNCA3_LC4U_2",20:30)`
 
 This will return a dataframe with the depths and some metadata.
 

@@ -71,8 +71,8 @@
 <p><code><a href="https://remotes.r-lib.org/reference/install_github.html">remotes::install_github("nickmckay/Lakes380CoreDepthTools")</a></code></p>
 <p>and then load it with</p>
 <p><code><a href="https://rdrr.io/r/base/library.html">library(Lakes380CoreDepthTools)</a></code></p>
-<p>Currently, the functionality is pretty basic. To convert core-section depth to depth below lake floor, use the function <code><a href="reference/coreSection_to_dblf.html">coreSection_to_dblf()</a></code> with the corename and depth below the top of the core liner. You can run it for one or more depths. Here is an example:</p>
-<p><code>dblf &lt;- coreSection_to_dblf("L380_DUNCA3_LC4U_1",50:110)</code></p>
+<p>Currently, the functionality is pretty basic. To convert core-section depth to depth below lake floor, use the function <code><a href="reference/coreSection_to_dblf.html">coreSection_to_dblf()</a></code> with the corename and depth below the top of the core liner. You can run it for one or more depths. Here is an example that will calculate depth below lake floor for 20 to 30 cm below the core liner in core L380_DUNCA3_LC4U_2:</p>
+<p><code>dblf &lt;- coreSection_to_dblf("L380_DUNCA3_LC4U_2",20:30)</code></p>
 <p>This will return a dataframe with the depths and some metadata.</p>
 <p>All of the depths in the package, both inputs and outputs should be in cm. It should give you an error if you ask for a bad depth range.</p>
 <p>If you’re having trouble getting the right core name, try the helper functions <code><a href="reference/findCoreSectionName.html">findCoreSectionName()</a></code> where you can input a guess and it will give you suggestions, or <code><a href="reference/listCoreSectionNames.html">listCoreSectionNames()</a></code> to see all the known names.</p>
