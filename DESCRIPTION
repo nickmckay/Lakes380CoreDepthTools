@@ -1,13 +1,13 @@
 Package: Lakes380CoreDepthTools
-Title: What the Package Does (One Line, Title Case)
+Title: Convert core depths for Lakes 380 cores. 
 Version: 0.1.0
 Authors@R: 
-    person(given = "First",
-           family = "Last",
+    person(given = "Nick",
+           family = "McKay",
            role = c("aut", "cre"),
-           email = "first.last@example.com",
-           comment = c(ORCID = "YOUR-ORCID-ID"))
-Description: What the package does (one paragraph).
+           email = "nick@nau.edu",
+           comment = c(ORCID = "0000-0003-3598-5113"))
+Description: Converts core depths for Lakes 380 cores.
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
