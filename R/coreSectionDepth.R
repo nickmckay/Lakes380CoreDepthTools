@@ -14,6 +14,15 @@
 #'
 coreSection_to_dblf <- function(corename,cm){
 
+  if(!is.character(corename)){
+    stop("corename should be of class character")
+  }
+
+  corename <- unique(corename)
+  if(length(corename) > 1){
+    stop("more than one corename was entered. To calculate depths from multiple sections, use multi_coreSection_to_dblf")
+  }
+
 #find the relevant core section row
 section <- dplyr::filter(finalKey,tolower(corename) == tolower(`Section Name`))
 
@@ -50,11 +59,37 @@ if(!is.numeric(secTopDblf) | !is.numeric(secRoiTop)){
                     topSource = section$topSource[1],
                     botSource = section$botSource[1],
                     coreName = corename))
-  #then check
 
-  #
+}
 
 
+#' Convert depths for multiple core sections
+#'
+#' @param corename a vector of corenames
+#' @param cm a vector of corresponding depths that matches the length of corenames
+#'
+#' @importFrom purrr map2_dfr
+#' @return a tibble
+#' @export
+#'
+#' @examples
+#'
+#' multi_coreSection_to_dblf(c("L380_DUNCA3_LC4U_1","L380_DUNCA3_LC4U_2"),c(20,10))
+#'
+multi_coreSection_to_dblf <- function(corename,cm){
+
+
+if(is.list(corename)){
+  corename <- unlist(corename)
+}
+
+
+if(is.list(cm)){
+  cm <- unlist(cm)
+}
+
+
+  return(purrr::map2_dfr(corename,cm,.f = coreSection_to_dblf))
 }
 
 
