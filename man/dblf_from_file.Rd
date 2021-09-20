@@ -2,7 +2,7 @@
 % Please edit documentation in R/ui.R
 \name{dblf_from_file}
 \alias{dblf_from_file}
-\title{Title}
+\title{Calculate mblf from a file}
 \usage{
 dblf_from_file(filename = NA, outfile = NA, conv.type = "coreliner")
 }
@@ -17,5 +17,5 @@ dblf_from_file(filename = NA, outfile = NA, conv.type = "coreliner")
 an updated file
 }
 \description{
-Title
+Calculate mblf from a file
 }

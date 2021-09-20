@@ -12,7 +12,7 @@ multi_coreSection_to_dblf(corename, cm)
 \item{cm}{a vector of corresponding depths that matches the length of corenames}
 }
 \value{
-
+a tibble
 }
 \description{
 Convert depths for multiple core sections
