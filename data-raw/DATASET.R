@@ -7,11 +7,11 @@ getRoiTop <- function(secTop,foamTop,hsTop,hsRoiTop){
     topSource <- "non-HSI"
   }else{
     if(is.na(hsTop)){
-      roiTop <- hsRoiTop + secTop
+      roiTop <- hsRoiTop - secTop
       topSource <- "HSI"
 
     }else{
-      roiTop <- hsRoiTop + hsTop
+      roiTop <- hsRoiTop - hsTop
       topSource <- "HSI"
 
     }
@@ -32,11 +32,11 @@ getRoiBot <- function(secTop,secLenField,secLenLab,foamBot,hsTop,hsRoiBot){
     }
   }else{
     if(is.na(hsTop)){
-      roiBot <- hsRoiBot + secTop
+      roiBot <- hsRoiBot - secTop
       botSource <- "HSI"
 
     }else{
-      roiBot <- hsRoiBot + hsTop
+      roiBot <- hsRoiBot - hsTop
       botSource <- "HSI"
 
     }
