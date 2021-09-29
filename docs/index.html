@@ -31,7 +31,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="index.html">Lakes380CoreDepthTools</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.4.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.5.0</span>
       </span>
     </div>
 
@@ -39,7 +39,7 @@
       <ul class="nav navbar-nav">
 <li>
   <a href="index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
+    <span class="fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -76,7 +76,7 @@
 <p>Then you can install the package</p>
 <p><code><a href="https://remotes.r-lib.org/reference/install_github.html">remotes::install_github("nickmckay/Lakes380CoreDepthTools")</a></code></p>
 <p>and then load it with</p>
-<p><code>library(Lakes380CoreDepthTools)</code></p>
+<p><code><a href="https://rdrr.io/r/base/library.html">library(Lakes380CoreDepthTools)</a></code></p>
 </div>
 <div id="how-to-calculate-dblf" class="section level2">
 <h2 class="hasAnchor">
@@ -85,6 +85,12 @@
 <p><code>dblf &lt;- coreSection_to_dblf("L380_DUNCA3_LC4U_2",20:30)</code></p>
 <p>This will return a dataframe with the depths and some metadata.</p>
 <p>All of the depths in the package, both inputs and outputs should be in cm. It should give you an error if you ask for a bad depth range.</p>
+</div>
+<div id="calculate-a-core-section-depth-if-you-know-dblf" class="section level2">
+<h2 class="hasAnchor">
+<a href="#calculate-a-core-section-depth-if-you-know-dblf" class="anchor"></a>Calculate a core section depth if you know dblf</h2>
+<p>If you want to do the opposite, use <code><a href="reference/dblf_to_coreSection.html">dblf_to_coreSection()</a></code>. Here you input the core name (not the section name) which will be the same, but without the final underscore and section number. For example, we could go backwards in this core by doing:</p>
+<p><code>cs &lt;- dblf_to_coreSection("L380_DUNCA3_LC4U",105)</code></p>
 <div id="find-the-right-core-name" class="section level3">
 <h3 class="hasAnchor">
 <a href="#find-the-right-core-name" class="anchor"></a>Find the right core name</h3>
