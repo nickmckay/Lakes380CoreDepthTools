@@ -32,6 +32,14 @@ This will return a dataframe with the depths and some metadata.
 
 All of the depths in the package, both inputs and outputs should be in cm. It should give you an error if you ask for a bad depth range. 
 
+## Calculate a core section depth if you know dblf
+
+If you want to do the opposite, use `dblf_to_coreSection()`. Here you input the core name (not the section name) which will be the same, but without the final underscore and section number. For example, we could go backwards in this core by doing:
+
+`cs <- dblf_to_coreSection("L380_DUNCA3_LC4U",105)`
+
+
+
 ### Find the right core name
 If you're having trouble getting the right core name, try the helper functions `findCoreSectionName()` where you can input a guess and it will give you suggestions, or `listCoreSectionNames()` to see all the known names. 
 

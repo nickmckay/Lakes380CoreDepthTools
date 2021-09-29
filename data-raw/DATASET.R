@@ -54,7 +54,9 @@ coreData <- readxl::read_xlsx(
   system.file("extdata", "Lakes380Cores.xlsx", package = "Lakes380CoreDepthTools"),
   col_types = "text"
 ) %>%
-  mutate(across(contains("Section") & -any_of("Section Name"),m_to_cm))
+  mutate(across(contains("Section") & -any_of("Section Name"),m_to_cm)) %>%
+  rename(compact = `Compaction off set to correct [cm]`,
+         compactOver = `Depth over which to correction compaction [cm]`)
 
 roiTop <- select(coreData,
                  secTop = `Section Top`,
@@ -75,7 +77,7 @@ roiBot <- select(coreData,
   purrr::pmap_dfr(.f = getRoiBot)
 
 
-key <- select(coreData,`Section Name`) %>%
+key <- select(coreData,`Section Name`,starts_with("compact")) %>%
   bind_cols(roiTop,roiBot) %>%
   mutate(sectionLength = roiBot - roiTop,
          coreName = stringr::str_sub(`Section Name`,1,-3),

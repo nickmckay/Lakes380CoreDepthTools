@@ -6,7 +6,7 @@
 #' @importFrom crayon bold
 #' @importFrom readxl read_xls read_xlsx
 #' @importFrom readr read_csv write_csv
-#' @imporFrom tools file_ext file_path_sans_ext
+#' @importFrom tools file_ext file_path_sans_ext
 #' @importFrom dplyr bind_cols
 #'
 #' @return an updated file

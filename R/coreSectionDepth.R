@@ -1,3 +1,54 @@
+#' Get core section depth from dblf
+#'
+#' @param core Name of the core (not the core section!) (e.g. "L380_OTOTO_LC4U")
+#' @param dblf depth below the lake floor in cm
+#' @importFrom purrr pmap_lgl
+#' @importFrom dplyr between filter
+#' @importFrom glue glue
+#' @return a data.frame with core section and depth
+#' @export
+#'
+#' @examples
+#' dblf_to_coreSection("L380_OTOTO_LC4U",110)
+#' dblf_to_coreSection("L380_OTOTO_LC1U",10)
+dblf_to_coreSection <- function(core,dblf){
+  #build a table for all cores
+
+  theseCores <- dplyr::filter(finalKey,coreName == core)
+  if(nrow(theseCores) < 2 | nrow(theseCores) > 6){
+    stop(glue::glue("check your core name, we found {nrow(theseCores)} core sections with a core name of {core}. Did you enter a core and not a section name?"))
+  }
+
+  whichCore <- which(
+    purrr::pmap_lgl(theseCores,
+                    function(secTopDblf,secBotDblf,...){
+                      dplyr::between(dblf,left = secTopDblf, right = secBotDblf)
+                    }
+    )
+  )
+
+  if(length(whichCore)<1){
+    stop("Dblf is outside the possible range for these cores.")
+  }
+  if(length(whichCore)>1){
+    warning("Multiple cores found with this dblf. This probably means the dblf is on a boundary. Taking the upper core")
+    whichCore <- min(whichCore)
+  }
+
+  thisCore <- theseCores[whichCore,]
+  sds <- seq(thisCore$roiTop,thisCore$roiBot,length.out = 100)
+  sdblf <- coreSection_to_dblf(thisCore$`Section Name`,sds)
+
+  secDepth <- approx(sdblf$dblf,sds,dblf)$y
+
+  out <- data.frame(dblf,thisCore$`Section Name`,secDepth)
+  out <- setNames(out,c("dblf (cm)","Core Section","Section Depth (cm)"))
+
+  return(out)
+
+}
+
+
 #' Calculate depth below lake floor
 #'
 #' @param corename Name of the lakes 380 core section
@@ -23,42 +74,81 @@ coreSection_to_dblf <- function(corename,cm){
     stop("more than one corename was entered. To calculate depths from multiple sections, use multi_coreSection_to_dblf")
   }
 
-#find the relevant core section row
-section <- dplyr::filter(finalKey,tolower(corename) == tolower(`Section Name`))
+  #find the relevant core section row
+  section <- dplyr::filter(finalKey,tolower(corename) == tolower(`Section Name`))
 
-if(nrow(section) == 0){
-  stop(glue::glue("Couldn't find a core section named {corename}. Search for corenames with `findCoreSectionName`, or for a list of known core sections run `listCoreSectionNames()`"))
-}
-
-if(nrow(section) > 1){
-  stop("Multiple core section matches. This shouldn't happen")
-}
-
-# Get key metadata
-secTopDblf <- section$secTopDblf[1]
-secRoiTop <- section$roiTop[1]
-secRoiBot <- section$roiBot[1]
-
-if(is.numeric(secRoiBot)){
-  if(any(secRoiBot < cm | secRoiTop > cm)){
-    badDepth <- cm[which(secRoiBot < cm | secRoiTop > cm)]
-    stop(glue::glue("At least one requested depth ({badDepth[1]} cm) is outside the ROI range ({secRoiTop} to {secRoiBot} cm) for core {corename}"))
+  if(nrow(section) == 0){
+    stop(glue::glue("Couldn't find a core section named {corename}. Search for corenames with `findCoreSectionName`, or for a list of known core sections run `listCoreSectionNames()`"))
   }
-}
+
+  if(nrow(section) > 1){
+    stop("Multiple core section matches. This shouldn't happen")
+  }
+
+  # Get key metadata
+  secTopDblf <- section$secTopDblf[1]
+  secRoiTop <- section$roiTop[1]
+  secRoiBot <- section$roiBot[1]
+
+  #check for compaction adjustment
+  compact <- FALSE
+  if(!is.na(section$compact) & !is.na(section$compactOver)){
+    compact <- TRUE
+  }
+
+  if(compact){#check for bottom depth
+    if(is.numeric(secRoiBot)){
+      if(any(secRoiBot < cm)){
+        badDepth <- cm[which(secRoiBot < cm)]
+        stop(glue::glue("At least one requested depth ({badDepth[1]} cm) is below the ROI range ({secRoiTop} to {secRoiBot} cm) for core {corename}"))
+      }
+    }
+  }else{#check for both
+    if(is.numeric(secRoiBot)){
+      if(any(secRoiBot < cm | secRoiTop > cm)){
+        badDepth <- cm[which(secRoiBot < cm | secRoiTop > cm)]
+        stop(glue::glue("At least one requested depth ({badDepth[1]} cm) is outside the ROI range ({secRoiTop} to {secRoiBot} cm) for core {corename}"))
+      }
+    }
+  }
 
 
-if(!is.numeric(secTopDblf) | !is.numeric(secRoiTop)){
-  stop("missing metadata for core {corename}, cannot calculate depth below lake floor")
-}
+  if(!is.numeric(secTopDblf) | !is.numeric(secRoiTop)){
+    stop("missing metadata for core {corename}, cannot calculate depth below lake floor")
+  }
 
   #then calculate
   dblf <- cm - secRoiTop + secTopDblf
 
+  if(compact){
+    compacted <- c()
+    for(icm in 1:length(cm)){
+      if(dblf[icm] > as.numeric(section$compactOver)){
+        compactThis <- FALSE
+      }else{
+        compactThis <- TRUE
+      }
+
+
+      #compact if necessary
+      if(compactThis){
+        dblf[icm] <- adjustForCompaction(dblf[icm],
+                                         maxCompact = as.numeric(section$compact),
+                                         compactOver = as.numeric(section$compactOver)
+        )
+      }
+
+      compacted[icm] <- compactThis
+    }
+  }else{
+    compacted <- FALSE
+  }
 
   return(data.frame(dblf = dblf,
                     topSource = section$topSource[1],
                     botSource = section$botSource[1],
-                    coreName = corename))
+                    coreName = corename,
+                    compactionAdjusted = compacted))
 
 }
 
@@ -79,14 +169,14 @@ if(!is.numeric(secTopDblf) | !is.numeric(secRoiTop)){
 multi_coreSection_to_dblf <- function(corename,cm){
 
 
-if(is.list(corename)){
-  corename <- unlist(corename)
-}
+  if(is.list(corename)){
+    corename <- unlist(corename)
+  }
 
 
-if(is.list(cm)){
-  cm <- unlist(cm)
-}
+  if(is.list(cm)){
+    cm <- unlist(cm)
+  }
 
 
   return(purrr::map2_dfr(corename,cm,.f = coreSection_to_dblf))
@@ -101,7 +191,7 @@ if(is.list(cm)){
 #' @examples
 #' allNames <- listCoreSectionNames()
 listCoreSectionNames <- function(){
-  print(finalKey$`Section Name`)
+  return(finalKey$`Section Name`)
 }
 
 
