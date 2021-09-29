@@ -1,3 +1,5 @@
+# Lakes380CoreDepthTools 0.5.0
+
 # Lakes380CoreDepthTools 0.4.1
 
 * Fixed bug with hysperspectral data that aren't aligned to zero.
