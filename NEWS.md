@@ -1,3 +1,5 @@
+# Lakes380CoreDepthTools 0.5.1
+
 # Lakes380CoreDepthTools 0.5.0
 
 * Added function to account for surface compaction. See `adjustForCompaction` for details.
