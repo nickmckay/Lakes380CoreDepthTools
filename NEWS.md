@@ -1,3 +1,8 @@
+# Lakes380CoreDepthTools 0.5.1
+
+* Updated the core depth data file, now current as of 7 October 2021
+
+
 # Lakes380CoreDepthTools 0.5.0
 
 * Added function to account for surface compaction. See `adjustForCompaction` for details.

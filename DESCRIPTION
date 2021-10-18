@@ -1,6 +1,6 @@
 Package: Lakes380CoreDepthTools
 Title: Convert core depths for Lakes 380 cores. 
-Version: 0.5.0
+Version: 0.5.1
 Authors@R: 
     person(given = "Nick",
            family = "McKay",
