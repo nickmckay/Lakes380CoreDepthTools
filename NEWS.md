@@ -1,5 +1,6 @@
-# Lakes380CoreDepthTools 0.5.1
+# Lakes380CoreDepthTools 0.6
 
+* Depths that are now < 1cm below the bottom of the ROI will be assigned the deepest depth within the ROI. If it is more that 1 cm below, an error will still be generated
 * Updated the core depth data file, now current as of 7 October 2021
 
 

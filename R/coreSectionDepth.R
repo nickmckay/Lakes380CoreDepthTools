@@ -96,6 +96,12 @@ coreSection_to_dblf <- function(corename,cm){
     compact <- TRUE
   }
 
+  #adjust to bottom depth if within 1 cm.
+  if(any(between(secRoiBot - cm,-1,0))){
+    tc <- which(between(secRoiBot - cm,-1,0))
+    cm[tc] <- secRoiBot
+  }
+
   if(compact){#check for bottom depth
     if(is.numeric(secRoiBot)){
       if(any(secRoiBot < cm)){
