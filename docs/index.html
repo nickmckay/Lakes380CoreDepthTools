@@ -31,7 +31,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="index.html">Lakes380CoreDepthTools</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.6.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.7.1</span>
       </span>
     </div>
 
@@ -39,7 +39,7 @@
       <ul class="nav navbar-nav">
 <li>
   <a href="index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
+    <span class="fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -76,32 +76,55 @@
 <p>Then you can install the package</p>
 <p><code><a href="https://remotes.r-lib.org/reference/install_github.html">remotes::install_github("nickmckay/Lakes380CoreDepthTools")</a></code></p>
 <p>and then load it with</p>
-<p><code>library(Lakes380CoreDepthTools)</code></p>
+<p><code><a href="https://rdrr.io/r/base/library.html">library(Lakes380CoreDepthTools)</a></code></p>
 </div>
-<div id="how-to-calculate-dblf" class="section level2">
+<div id="how-to-calculate-dblf-from-depths-relative-to-core-liners" class="section level2">
 <h2 class="hasAnchor">
-<a href="#how-to-calculate-dblf" class="anchor"></a>How to calculate dblf</h2>
+<a href="#how-to-calculate-dblf-from-depths-relative-to-core-liners" class="anchor"></a>How to calculate dblf from depths relative to core liners</h2>
 <p>Currently, the functionality is pretty basic. To convert core-section depth to depth below lake floor, use the function <code><a href="reference/coreSection_to_dblf.html">coreSection_to_dblf()</a></code> with the corename and depth below the top of the core liner. You can run it for one or more depths. Here is an example that will calculate depth below lake floor for 20 to 30 cm below the core liner in core L380_DUNCA3_LC4U_2:</p>
 <p><code>dblf &lt;- coreSection_to_dblf("L380_DUNCA3_LC4U_2",20:30)</code></p>
 <p>This will return a dataframe with the depths and some metadata.</p>
 <p>All of the depths in the package, both inputs and outputs should be in cm. It should give you an error if you ask for a bad depth range.</p>
+<div id="how-to-calculate-dblf-from-coreliner-depth-for-multiple-core-sections" class="section level3">
+<h3 class="hasAnchor">
+<a href="#how-to-calculate-dblf-from-coreliner-depth-for-multiple-core-sections" class="anchor"></a>How to calculate dblf from coreliner depth for multiple core sections.</h3>
+<p>You may want to convert multiple core sections at once. You can do so using a vector or a data.frame that lists the core section names and corresponding depths. For example:</p>
+<p><code><a href="reference/multi_coreSection_to_dblf.html">multi_coreSection_to_dblf(c("L380_DUNCA3_LC4U_1","L380_DUNCA3_LC4U_2"),c(20,10))</a></code></p>
+<p>or in the case where you have the information stored in a data.frame</p>
+<p><code><a href="reference/multi_coreSection_to_dblf.html">multi_coreSection_to_dblf(corec("L380_DUNCA3_LC4U_1","L380_DUNCA3_LC4U_2"),c(20,10))</a></code></p>
+</div>
+<div id="load-in-a-spreadsheet-and-add-in-dblf" class="section level3">
+<h3 class="hasAnchor">
+<a href="#load-in-a-spreadsheet-and-add-in-dblf" class="anchor"></a>Load in a spreadsheet and add in dblf</h3>
+<p>The function <code><a href="reference/dblf_from_file.html">dblf_from_file()</a></code> will let you select a spreadsheet (csv, xls, xlsx) to load in, select the key columns, and write out a csv file with calculated depths. <strong>For now, this only works for core liner depth, and not for HSI depth</strong>. If you’d like this functionality to expand, please make a <a href="https://github.com/nickmckay/Lakes380CoreDepthTools/issues">request as a github issue</a>.</p>
+</div>
+</div>
+<div id="how-to-calculate-dblf-from-depths-output-from-hyperspectral-imaging-hsi" class="section level2">
+<h2 class="hasAnchor">
+<a href="#how-to-calculate-dblf-from-depths-output-from-hyperspectral-imaging-hsi" class="anchor"></a>How to calculate dblf from depths output from hyperspectral imaging (HSI)</h2>
+<p>HSI depths are typically reported relative to the top of the ROI, not the core liner, so a different function is used to convert those depths, but the pattern is similar:</p>
+<p><code>dblf &lt;- hsi_to_dblf("L380_DUNCA3_LC4U_2",20:30)</code></p>
+<p>This will return a dataframe with the depths and some metadata.</p>
+<p><strong>You’ll notice that if you enter a top section, the output depths will be identical to the input depths.</strong> This is by design, since the HSI data typically serve as the depth standard for each core.</p>
+<div id="similarly-to-core-liner-depths-there-is-an-option-to-convert-multiple-core-sections-at-once" class="section level3">
+<h3 class="hasAnchor">
+<a href="#similarly-to-core-liner-depths-there-is-an-option-to-convert-multiple-core-sections-at-once" class="anchor"></a>Similarly to core liner depths, there is an option to convert multiple core sections at once:</h3>
+<p><code><a href="reference/multi_hsi_to_dblf.html">multi_hsi_to_dblf(c("L380_DUNCA3_LC4U_1","L380_DUNCA3_LC4U_2"),c(20,10))</a></code></p>
+<p>or in the case where you have the information stored in a data.frame</p>
+<p><code><a href="reference/multi_hsi_to_dblf.html">multi_hsi_to_dblf(corec("L380_DUNCA3_LC4U_1","L380_DUNCA3_LC4U_2"),c(20,10))</a></code></p>
+</div>
 </div>
 <div id="calculate-a-core-section-depth-if-you-know-dblf" class="section level2">
 <h2 class="hasAnchor">
 <a href="#calculate-a-core-section-depth-if-you-know-dblf" class="anchor"></a>Calculate a core section depth if you know dblf</h2>
 <p>If you want to do the opposite, use <code><a href="reference/dblf_to_coreSection.html">dblf_to_coreSection()</a></code>. Here you input the core name (not the section name) which will be the same, but without the final underscore and section number. For example, we could go backwards in this core by doing:</p>
-<p><code>cs &lt;- dblf_to_coreSection("L380_DUNCA3_LC4U",105)</code></p>
-<div id="find-the-right-core-name" class="section level3">
-<h3 class="hasAnchor">
-<a href="#find-the-right-core-name" class="anchor"></a>Find the right core name</h3>
+<p><code>cs &lt;- dblf_to_coreSection(corename = df$corename, cm = df$depth)</code></p>
+</div>
+<div id="find-the-right-core-name" class="section level2">
+<h2 class="hasAnchor">
+<a href="#find-the-right-core-name" class="anchor"></a>Find the right core name</h2>
 <p>If you’re having trouble getting the right core name, try the helper functions <code><a href="reference/findCoreSectionName.html">findCoreSectionName()</a></code> where you can input a guess and it will give you suggestions, or <code><a href="reference/listCoreSectionNames.html">listCoreSectionNames()</a></code> to see all the known names.</p>
 <p>There is basic help documentation for these functions, see <a href="https://nickmckay.github.io/Lakes380CoreDepthTools/reference/index.html">reference</a>.</p>
-</div>
-<div id="load-in-a-spreadsheet-and-add-in-dblf" class="section level3">
-<h3 class="hasAnchor">
-<a href="#load-in-a-spreadsheet-and-add-in-dblf" class="anchor"></a>Load in a spreadsheet and add in dblf</h3>
-<p>The function <code><a href="reference/dblf_from_file.html">dblf_from_file()</a></code> will let you select a spreadsheet (csv, xls, xlsx) to load in, select the key columns, and write out a csv file with calculated depths.</p>
-</div>
 </div>
 </div>
   </div>

@@ -1,5 +1,8 @@
 # Lakes380CoreDepthTools 0.7.1
 
+* Added functionality to convert HSI depths
+
+
 # Lakes380CoreDepthTools 0.7.0
 
 * Updated the core depth data file, now current as of 15 October 2021
