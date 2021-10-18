@@ -65,6 +65,10 @@ dblf_to_coreSection <- function(core,dblf){
 #'
 coreSection_to_dblf <- function(corename,cm){
 
+  if(all(is.na(cm))){
+    return(NA)
+  }
+
   if(!is.character(corename)){
     stop("corename should be of class character")
   }
