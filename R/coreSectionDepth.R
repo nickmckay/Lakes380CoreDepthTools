@@ -303,11 +303,18 @@ hsi_to_dblf <- function(corename,cm){
   secRoiTop <- section$roiTop[1]
   secRoiBot <- section$roiBot[1]
 
+
+#convert to core liner
+  clDepth <- cm + secRoiTop
+
   #adjust to bottom depth if within 1 cm.
-  if(any(between(secRoiBot - cm,-1,0))){
-    tc <- which(between(secRoiBot - cm,-1,0))
-    cm[tc] <- secRoiBot
+  if(any(between(secRoiBot - clDepth,-1,0))){
+    tc <- which(between(secRoiBot - clDepth,-1,0))
+    clDepth[tc] <- secRoiBot
   }
+
+  #convert back to HS depth
+  cm <- clDepth - secRoiTop
 
   if(is.numeric(secRoiBot) & is.numeric(secRoiTop)){
     if(any((secRoiBot - secRoiTop) < cm)){

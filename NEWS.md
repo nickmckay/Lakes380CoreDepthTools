@@ -1,5 +1,8 @@
 # Lakes380CoreDepthTools 0.7.2
 
+* Updated the core depth data file, now current as of 4 November 2021
+* HSI depths now allow depths that are now < 1cm below the bottom of the ROI will be assigned the deepest depth within the ROI. If it is more that 1 cm below, an error will still be generated.
+
 # Lakes380CoreDepthTools 0.7.1
 
 * Added functionality to convert HSI depths
