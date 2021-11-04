@@ -1,3 +1,5 @@
+# Lakes380CoreDepthTools 0.7.2
+
 # Lakes380CoreDepthTools 0.7.1
 
 * Added functionality to convert HSI depths
