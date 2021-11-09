@@ -1,5 +1,8 @@
 # Lakes380CoreDepthTools 0.8.0
 
+* `dblf_from_file()` now works for HSI too. 
+* readme updated
+
 # Lakes380CoreDepthTools 0.7.2
 
 * Updated the core depth data file, now current as of 4 November 2021

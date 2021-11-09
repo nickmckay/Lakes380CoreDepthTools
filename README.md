@@ -46,7 +46,16 @@ or in the case where you have the information stored in a data.frame
 
 ### Load in a spreadsheet and add in dblf
 
-The function `dblf_from_file()` will let you select a spreadsheet (csv, xls, xlsx) to load in, select the key columns, and write out a csv file with calculated depths. **For now, this only works for core liner depth, and not for HSI depth**. If you'd like this functionality to expand, please make a [request as a github issue](https://github.com/nickmckay/Lakes380CoreDepthTools/issues). 
+The function `dblf_from_file()` will let you select a spreadsheet (csv, xls, xlsx) to load in, select the key columns, and write out a csv file with calculated depths. **This works for both core liner depth, and HSI depth**. Just specify conv.type = "coreliner" or conv.type = "hsi".
+
+If you want to convert multiple cores, try you can add a column with the core name to the spreadsheet, and then select that column in the process. That can look as simple as this:
+
+`dblf_from_file(conv.type = "coreliner")`
+
+Alternatively, if it's just one core, this might be easier (this time for HSI):
+
+`dblf_from_file(corename = "L380_FORSY_LC1U_2",conv.type = "HSI")`
+
 
 
 ## How to calculate dblf from depths output from hyperspectral imaging (HSI)

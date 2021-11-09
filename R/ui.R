@@ -11,7 +11,10 @@
 #'
 #' @return an updated file
 #' @export
-dblf_from_file <- function(filename = NA, outfile = NA, conv.type = "coreliner"){
+dblf_from_file <- function(filename = NA,
+                           outfile = NA,
+                           corename = NA,
+                           conv.type = "coreliner"){
 
   if(is.na(filename)){
     filename <- file.choose()
@@ -32,30 +35,42 @@ dblf_from_file <- function(filename = NA, outfile = NA, conv.type = "coreliner")
   }else{
     stop("Only set up tp load csv, xls or xlsx files so far.")
   }
-
-
   #read in the data
   data_in <- read(filename)
-  cat(crayon::bold("Select the core name variable:\n"))
-  dn <- names(data_in)
-  for(i in 1:length(dn)){
-  cat(paste(i,"-",dn[i],"\n"))
+  dn <- names(data_in)#get the data names
+
+
+  if(is.na(corename)){
+
+    cat(crayon::bold("Select the core name variable:\n"))
+
+    for(i in 1:length(dn)){
+      cat(paste(i,"-",dn[i],"\n"))
+    }
+    n = readline(prompt="please type the number for the correct match, or a zero  to enter a corename ")
+    idi=as.numeric(n)
+
+    if(idi == 0){
+      cn = readline(prompt="Enter the corename, starting with `L380_`")
+
+    }else{
+
+      cn <- data_in[,idi]
+      if(is.list(cn)){
+        cn <- unlist(cn)
+      }
+    }
+  }else{
+    cn <- corename
   }
-  n = readline(prompt="please type the number for the correct match, or a zero if none match: ")
-  idi=as.numeric(n)
 
-  if(idi == 0){
-    stop("You said that none matched")
-  }
-
-  cn <- data_in[,idi]
-  if(is.list(cn)){
-    cn <- unlist(cn)
+  if(conv.type == "coreliner"){
+    cat(crayon::bold("Select the depth below coreliner (in cm) variable:\n"))
+  }else if(tolower(conv.type) == "hsi"){
+    cat(crayon::bold("Select the HSI depth  (in cm) variable:\n"))
   }
 
 
-
-  cat(crayon::bold("Select the depth below coreliner (in cm) variable:\n"))
   for(i in 1:length(dn)){
     cat(paste(i,"-",dn[i],"\n"))
   }
@@ -71,13 +86,24 @@ dblf_from_file <- function(filename = NA, outfile = NA, conv.type = "coreliner")
     dp <- unlist(dp)
   }
 
-  print(crayon::bold("This can take a few seconds to read/write"))
+  cat(crayon::bold("This can take a few seconds to read/write\n"))
 
-  newDepths <- multi_coreSection_to_dblf(cn,dp)
+  if(tolower(conv.type) == "hsi"){
+    if(length(unique(cn)) > 1){
+      newDepths <- multi_hsi_to_dblf(cn,dp)
+    }else{
+      newDepths <- hsi_to_dblf(cn,dp)
+    }
+  }else{
+    newDepths <- multi_coreSection_to_dblf(cn,dp)
+  }
+
 
   data_out <- dplyr::bind_cols(data_in,newDepths)
 
-  readr::write_csv(data_out,file = outfile)
+  readr::write_csv(data_out,path = outfile)
+
+  cat(crayon::green(paste("Data written to",crayon::bold(outfile))))
 
   return(paste("Data written to",outfile))
 
