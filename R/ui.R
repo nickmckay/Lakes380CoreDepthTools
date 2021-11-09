@@ -2,7 +2,9 @@
 #'
 #' @param filename Optionally enter the file name (default = NA, will let you pick)
 #' @param outfile Optionally enter the output file path and name (default = NA, will append "-dblf" and save as csv
+#' @param corename core name, using the "L380-" prefix. If NA, you can select a column from the spreadsheet
 #' @param conv.type which conversion to use. For now the only option is coreliner
+#'
 #' @importFrom crayon bold
 #' @importFrom readxl read_xls read_xlsx
 #' @importFrom readr read_csv write_csv

@@ -4,12 +4,19 @@
 \alias{dblf_from_file}
 \title{Calculate mblf from a file}
 \usage{
-dblf_from_file(filename = NA, outfile = NA, conv.type = "coreliner")
+dblf_from_file(
+  filename = NA,
+  outfile = NA,
+  corename = NA,
+  conv.type = "coreliner"
+)
 }
 \arguments{
 \item{filename}{Optionally enter the file name (default = NA, will let you pick)}
 
 \item{outfile}{Optionally enter the output file path and name (default = NA, will append "-dblf" and save as csv}
+
+\item{corename}{core name, using the "L380-" prefix. If NA, you can select a column from the spreadsheet}
 
 \item{conv.type}{which conversion to use. For now the only option is coreliner}
 }
