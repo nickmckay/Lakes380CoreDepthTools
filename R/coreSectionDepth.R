@@ -53,6 +53,8 @@ dblf_to_coreSection <- function(core,dblf){
 #'
 #' @param corename Name of the lakes 380 core section
 #' @param cm section depth, from the top of the core liner, in cm
+#' @param extraAllowedBottom how many cm below the bottom of the ROI are allowed (converted to bottom of ROI) (default = 1)
+#' @param extraAllowedTop how many cm above the top of the ROI are allowed (converted to top of ROI) (default = 0.25)
 #' @importFrom glue glue
 #' @importFrom dplyr filter
 #'
@@ -63,7 +65,7 @@ dblf_to_coreSection <- function(core,dblf){
 #'
 #' coreSection_to_dblf("L380_DUNCA3_LC4U_1",50:60)
 #'
-coreSection_to_dblf <- function(corename,cm){
+coreSection_to_dblf <- function(corename,cm,extraAllowedBottom = 1,extraAllowedTop = 0.25){
 
   if(all(is.na(cm))){
     return(NA)
@@ -100,9 +102,16 @@ coreSection_to_dblf <- function(corename,cm){
     compact <- TRUE
   }
 
-  #adjust to bottom depth if within 1 cm.
-  if(any(between(secRoiBot - cm,-1,0))){
-    tc <- which(between(secRoiBot - cm,-1,0))
+
+  #adjust to top depth if within extraAllowedTop cm.
+  if(any(between(cm - secRoiTop,-extraAllowedTop,0))){
+    tc <- which(between(cm - secRoiTop,-extraAllowedTop,0))
+    cm[tc] <- secRoiTop
+  }
+
+  #adjust to bottom depth if within extraAllowedBottom cm.
+  if(any(between(secRoiBot - cm,-extraAllowedBottom,0))){
+    tc <- which(between(secRoiBot - cm,-extraAllowedBottom,0))
     cm[tc] <- secRoiBot
   }
 
@@ -264,7 +273,7 @@ findCoreSectionName <- function(corename_guess){
 #'
 #' @param corename a vector of corenames
 #' @param cm a vector of corresponding depths that matches the length of corenames
-#'
+#' @param extraAllowedBottom how many cm below the bottom of the ROI are allowed (converted to bottom of ROI) (default = 1)
 #' @return
 #' @export
 #'
@@ -272,7 +281,7 @@ findCoreSectionName <- function(corename_guess){
 #'
 #' hsi_to_dblf("L380_DUNCA3_LC4U_2",0:30)
 #'
-hsi_to_dblf <- function(corename,cm){
+hsi_to_dblf <- function(corename,cm,extraAllowedBottom = 1){
 
   if(all(is.na(cm))){
     return(NA)
@@ -308,8 +317,8 @@ hsi_to_dblf <- function(corename,cm){
   clDepth <- cm + secRoiTop
 
   #adjust to bottom depth if within 1 cm.
-  if(any(between(secRoiBot - clDepth,-1,0))){
-    tc <- which(between(secRoiBot - clDepth,-1,0))
+  if(any(between(secRoiBot - clDepth,-extraAllowedBottom,0))){
+    tc <- which(between(secRoiBot - clDepth,-extraAllowedBottom,0))
     clDepth[tc] <- secRoiBot
   }
 
