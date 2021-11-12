@@ -4,12 +4,21 @@
 \alias{coreSection_to_dblf}
 \title{Calculate depth below lake floor}
 \usage{
-coreSection_to_dblf(corename, cm)
+coreSection_to_dblf(
+  corename,
+  cm,
+  extraAllowedBottom = 1,
+  extraAllowedTop = 0.25
+)
 }
 \arguments{
 \item{corename}{Name of the lakes 380 core section}
 
 \item{cm}{section depth, from the top of the core liner, in cm}
+
+\item{extraAllowedBottom}{how many cm below the bottom of the ROI are allowed (converted to bottom of ROI) (default = 1)}
+
+\item{extraAllowedTop}{how many cm above the top of the ROI are allowed (converted to top of ROI) (default = 0.25)}
 }
 \value{
 depth below lake floor in cm

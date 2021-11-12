@@ -39,7 +39,7 @@ dblf_to_coreSection <- function(core,dblf){
   sds <- seq(thisCore$roiTop,thisCore$roiBot,length.out = 100)
   sdblf <- coreSection_to_dblf(thisCore$`Section Name`,sds)
 
-  secDepth <- approx(sdblf$dblf,sds,dblf)$y
+  secDepth <- stats::approx(sdblf$dblf,sds,dblf)$y
 
   out <- data.frame(dblf,thisCore$`Section Name`,secDepth)
   out <- setNames(out,c("dblf (cm)","Core Section","Section Depth (cm)"))
@@ -47,6 +47,10 @@ dblf_to_coreSection <- function(core,dblf){
   return(out)
 
 }
+
+
+
+
 
 
 #' Calculate depth below lake floor
@@ -274,7 +278,7 @@ findCoreSectionName <- function(corename_guess){
 #' @param corename a vector of corenames
 #' @param cm a vector of corresponding depths that matches the length of corenames
 #' @param extraAllowedBottom how many cm below the bottom of the ROI are allowed (converted to bottom of ROI) (default = 1)
-#' @return
+#' @return depth below lake floor in cm
 #' @export
 #'
 #' @examples

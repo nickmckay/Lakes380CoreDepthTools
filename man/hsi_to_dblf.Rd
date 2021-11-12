@@ -4,15 +4,17 @@
 \alias{hsi_to_dblf}
 \title{Convert depths from hyperspectral imaging}
 \usage{
-hsi_to_dblf(corename, cm)
+hsi_to_dblf(corename, cm, extraAllowedBottom = 1)
 }
 \arguments{
 \item{corename}{a vector of corenames}
 
 \item{cm}{a vector of corresponding depths that matches the length of corenames}
+
+\item{extraAllowedBottom}{how many cm below the bottom of the ROI are allowed (converted to bottom of ROI) (default = 1)}
 }
 \value{
-
+depth below lake floor in cm
 }
 \description{
 Convert depths from hyperspectral imaging
