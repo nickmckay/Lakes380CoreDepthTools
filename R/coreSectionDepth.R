@@ -14,8 +14,14 @@
 dblf_to_coreSection <- function(core,dblf){
   #build a table for all cores
 
+  if(all(is.na(dblf))){
+    out <- data.frame(dblf,core,NA)
+    out <- setNames(out,c("dblf (cm)","Core Section","Section Depth (cm)"))
+    return(out)
+  }
+
   theseCores <- dplyr::filter(finalKey,coreName == core)
-  if(nrow(theseCores) < 2 | nrow(theseCores) > 6){
+  if(nrow(theseCores) < 1 | nrow(theseCores) > 6){
     stop(glue::glue("check your core name, we found {nrow(theseCores)} core sections with a core name of {core}. Did you enter a core and not a section name?"))
   }
 
