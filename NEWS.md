@@ -1,3 +1,5 @@
+# Lakes380CoreDepthTools 0.8.1
+
 # Lakes380CoreDepthTools 0.8.0
 
 * `dblf_from_file()` now works for HSI too. 
