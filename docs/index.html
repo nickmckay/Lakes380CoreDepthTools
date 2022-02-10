@@ -31,7 +31,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="index.html">Lakes380CoreDepthTools</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.8.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.9.0</span>
       </span>
     </div>
 
@@ -39,7 +39,7 @@
       <ul class="nav navbar-nav">
 <li>
   <a href="index.html">
-    <span class="fas fa-home fa-lg"></span>
+    <span class="fas fa fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -76,7 +76,7 @@
 <p>Then you can install the package</p>
 <p><code><a href="https://remotes.r-lib.org/reference/install_github.html">remotes::install_github("nickmckay/Lakes380CoreDepthTools")</a></code></p>
 <p>and then load it with</p>
-<p><code><a href="https://rdrr.io/r/base/library.html">library(Lakes380CoreDepthTools)</a></code></p>
+<p><code>library(Lakes380CoreDepthTools)</code></p>
 </div>
 <div id="how-to-calculate-dblf-from-depths-relative-to-core-liners" class="section level2">
 <h2 class="hasAnchor">
@@ -85,9 +85,9 @@
 <p><code>dblf &lt;- coreSection_to_dblf("L380_DUNCA3_LC4U_2",20:30)</code></p>
 <p>This will return a dataframe with the depths and some metadata.</p>
 <p>All of the depths in the package, both inputs and outputs should be in cm. It should give you an error if you ask for a bad depth range.</p>
-<div id="how-to-calculate-dblf-from-coreliner-depth-for-multiple-core-sections" class="section level3">
+<div id="how-to-calculate-dblf-from-coreliner-depth-for-multiple-core-sections-" class="section level3">
 <h3 class="hasAnchor">
-<a href="#how-to-calculate-dblf-from-coreliner-depth-for-multiple-core-sections" class="anchor"></a>How to calculate dblf from coreliner depth for multiple core sections.</h3>
+<a href="#how-to-calculate-dblf-from-coreliner-depth-for-multiple-core-sections-" class="anchor"></a>How to calculate dblf from coreliner depth for multiple core sections.</h3>
 <p>You may want to convert multiple core sections at once. You can do so using a vector or a data.frame that lists the core section names and corresponding depths. For example:</p>
 <p><code><a href="reference/multi_coreSection_to_dblf.html">multi_coreSection_to_dblf(c("L380_DUNCA3_LC4U_1","L380_DUNCA3_LC4U_2"),c(20,10))</a></code></p>
 <p>or in the case where you have the information stored in a data.frame</p>
