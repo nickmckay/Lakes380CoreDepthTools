@@ -42,3 +42,5 @@ vignettes/*.pdf
 inst/extdata/~$Lakes380Cores.xlsx
 inst/doc
 .DS_Store
+inst/.DS_Store
+.DS_Store
