@@ -1,5 +1,7 @@
 # Lakes380CoreDepthTools 0.12.1
 
+* Updated the core depth data file, now current as of 5 July 2022
+
 # Lakes380CoreDepthTools 0.12.0
 
 * Updated the core depth data file, now current as of 10 May 2022
