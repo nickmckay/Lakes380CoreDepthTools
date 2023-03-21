@@ -1,5 +1,8 @@
 # Lakes380CoreDepthTools 0.14.0
 
+* Added the capacity to accommodate more complex or long core composites, and resolve them
+* Updated the core depth data file with Adelaine's updates on 22 Mar 2023
+
 # Lakes380CoreDepthTools 0.13.0
 
 * Updated the core depth data file, now current as of 7 Oct 2022
