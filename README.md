@@ -2,6 +2,7 @@
 
 <!-- badges: start -->
 [![R-CMD-check](https://github.com/nickmckay/Lakes380CoreDepthTools/workflows/R-CMD-check/badge.svg)](https://github.com/nickmckay/Lakes380CoreDepthTools/actions)
+[![R-CMD-check](https://github.com/nickmckay/Lakes380CoreDepthTools/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/nickmckay/Lakes380CoreDepthTools/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
 
 ## Installation
