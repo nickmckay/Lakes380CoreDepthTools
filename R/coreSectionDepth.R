@@ -348,35 +348,43 @@ hsi_to_dblf <- function(corename,cm,extraAllowedBottom = 1){
 #convert to core liner
   clDepth <- cm + secRoiTop
 
-  #adjust to bottom depth if within 1 cm.
-  if(any(between(secRoiBot - clDepth,-extraAllowedBottom,0))){
-    tc <- which(between(secRoiBot - clDepth,-extraAllowedBottom,0))
-    clDepth[tc] <- secRoiBot
-  }
-
-  #convert back to HS depth
-  cm <- clDepth - secRoiTop
-
-  if(is.numeric(secRoiBot) & is.numeric(secRoiTop)){
-    if(any((secRoiBot - secRoiTop) < cm)){
-      badDepth <- cm[which((secRoiBot - secRoiTop) < cm)]
-      stop(glue::glue("At least one requested depth ({badDepth[1]} cm on HSI scale, {badDepth[1] + secRoiTop} relative to the coreliner) is outside the ROI range ({secRoiTop} to {secRoiBot} cm) for core {corename}"))
-    }
-  }
+  # #adjust to bottom depth if within 1 cm.
+  # if(any(between(secRoiBot - clDepth,-extraAllowedBottom,0))){
+  #   tc <- which(between(secRoiBot - clDepth,-extraAllowedBottom,0))
+  #   clDepth[tc] <- secRoiBot
+  # }
 
 
+  #try to get dblf
+  dblf <- coreSection_to_dblf(corename,clDepth,extraAllowedBottom = extraAllowedBottom)
 
-  if(!is.numeric(secTopDblf)){
-    stop("missing metadata for core {corename}, cannot calculate depth below lake floor")
-  }
+  return(dblf)
 
-  #then calculate
-  dblf <- cm + secTopDblf
-
-  return(data.frame(dblf = dblf,
-                    topSource = section$topSource[1],
-                    botSource = section$botSource[1],
-                    coreName = corename))
+  #
+  #
+  # #convert back to HS depth
+  # cm <- clDepth - secRoiTop
+  #
+  # if(is.numeric(secRoiBot) & is.numeric(secRoiTop)){
+  #   if(any((secRoiBot - secRoiTop) < cm)){
+  #     badDepth <- cm[which((secRoiBot - secRoiTop) < cm)]
+  #     stop(glue::glue("At least one requested depth ({badDepth[1]} cm on HSI scale, {badDepth[1] + secRoiTop} relative to the coreliner) is outside the ROI range ({secRoiTop} to {secRoiBot} cm) for core {corename}"))
+  #   }
+  # }
+  #
+  #
+  #
+  # if(!is.numeric(secTopDblf)){
+  #   stop("missing metadata for core {corename}, cannot calculate depth below lake floor")
+  # }
+  #
+  # #then calculate
+  # dblf <- cm + secTopDblf
+#
+#   return(data.frame(dblf = dblf,
+#                     topSource = section$topSource[1],
+#                     botSource = section$botSource[1],
+#                     coreName = corename))
 
 }
 
