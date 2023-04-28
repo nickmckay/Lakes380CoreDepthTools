@@ -1,3 +1,5 @@
+# Lakes380CoreDepthTools 0.15.0
+
 # Lakes380CoreDepthTools 0.14.0
 
 * Added the capacity to accommodate more complex or long core composites, and resolve them
