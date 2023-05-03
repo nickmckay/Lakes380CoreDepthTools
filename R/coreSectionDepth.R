@@ -174,12 +174,15 @@ coreSection_to_dblf <- function(corename,cm,extraAllowedBottom = 1,extraAllowedT
   if(compact){
     compacted <- c()
     for(icm in 1:length(cm)){
-      if(all(dblf[icm] > as.numeric(section$compactOver))){
+      if(any(is.na(suppressWarnings(as.numeric(section$compactOver))))){
         compactThis <- FALSE
       }else{
-        compactThis <- TRUE
+        if(dblf[icm] > as.numeric(section$compactOver)){
+          compactThis <- FALSE
+        }else{
+          compactThis <- TRUE
+        }
       }
-
 
       #compact if necessary
       if(compactThis){

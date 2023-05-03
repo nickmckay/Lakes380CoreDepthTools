@@ -1,5 +1,7 @@
 # Lakes380CoreDepthTools 0.15.1
 
+* Accommodate blanks in compaction spreadsheet
+
 # Lakes380CoreDepthTools 0.15.0
 
 * Updated the core depth data file, now current as of 22 Apr 2023
