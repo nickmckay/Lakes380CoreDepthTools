@@ -1,3 +1,5 @@
+# Lakes380CoreDepthTools 0.15.2
+
 # Lakes380CoreDepthTools 0.15.1
 
 * Accommodate blanks in compaction spreadsheet
