@@ -92,6 +92,7 @@ coreSection_to_dblf <- function(corename,cm,extraAllowedBottom = 1,extraAllowedT
 
   #check to see if it's part of a master composite
   if(tolower(corename) %in% tolower(finalKey$`Original Section Name`)){
+    isComposite <- TRUE
     #determine master corename by name and depth
     section <- dplyr::filter(finalKey,tolower(corename) == tolower(`Original Section Name`))
     if(nrow(section) > 1){
@@ -112,6 +113,8 @@ coreSection_to_dblf <- function(corename,cm,extraAllowedBottom = 1,extraAllowedT
 
   }else{
     #find the relevant core section row
+    isComposite <- FALSE
+
     section <- dplyr::filter(finalKey,tolower(corename) == tolower(`Section Name`))
   }
 
@@ -131,7 +134,9 @@ coreSection_to_dblf <- function(corename,cm,extraAllowedBottom = 1,extraAllowedT
   #check for compaction adjustment
   compact <- FALSE
   if(!is.na(section$compact) & !is.na(section$compactOver)){
-    compact <- TRUE
+    if(is.numeric(section$compact) & is.numeric(section$compactOver)){
+      compact <- TRUE
+    }
   }
 
 
@@ -151,14 +156,32 @@ coreSection_to_dblf <- function(corename,cm,extraAllowedBottom = 1,extraAllowedT
     if(is.numeric(secRoiBot)){
       if(any(secRoiBot < cm)){
         badDepth <- cm[which(secRoiBot < cm)]
+        if(isComposite){
+          warning(glue::glue("At least one requested depth ({badDepth[1]} cm) is below the ROI range ({secRoiTop} to {secRoiBot} cm) for core {corename}. This is a composite record, so we'll just ignore those depths for now."))
+          cm <- cm[-which(secRoiBot < cm)]
+          if(length(cm) == 0){
+            stop("After removing depths outside the range, there were no depths left.")
+          }
+
+        }else{
         stop(glue::glue("At least one requested depth ({badDepth[1]} cm) is below the ROI range ({secRoiTop} to {secRoiBot} cm) for core {corename}"))
+        }
       }
     }
   }else{#check for both
     if(is.numeric(secRoiBot)){
       if(any(secRoiBot < cm | secRoiTop > cm)){
         badDepth <- cm[which(secRoiBot < cm | secRoiTop > cm)]
+        if(isComposite){
+          warning(glue::glue("At least one requested depth ({badDepth[1]} cm) is below the ROI range ({secRoiTop} to {secRoiBot} cm) for core {corename}. This is a composite record, so we'll just ignore those depths for now."))
+          cm <- cm[-which(secRoiBot < cm)]
+          if(length(cm) == 0){
+            stop("After removing depths outside the range, there were no depths left.")
+          }
+
+        }else{
         stop(glue::glue("At least one requested depth ({badDepth[1]} cm) is outside the ROI range ({secRoiTop} to {secRoiBot} cm) for core {corename}"))
+        }
       }
     }
   }
