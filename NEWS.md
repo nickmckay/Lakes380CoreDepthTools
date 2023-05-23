@@ -1,3 +1,5 @@
+# Lakes380CoreDepthTools 0.15.3
+
 # Lakes380CoreDepthTools 0.15.2
 
 * Modified coreSection_to_dblf to ignore depths outside ROI range for composite cores, and give an warning, rather than stopping with an error. 
