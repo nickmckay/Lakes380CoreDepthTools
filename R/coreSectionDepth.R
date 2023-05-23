@@ -173,8 +173,10 @@ coreSection_to_dblf <- function(corename,cm,extraAllowedBottom = 1,extraAllowedT
       if(any(secRoiBot < cm | secRoiTop > cm)){
         badDepth <- cm[which(secRoiBot < cm | secRoiTop > cm)]
         if(isComposite){
-          warning(glue::glue("At least one requested depth ({badDepth[1]} cm) is below the ROI range ({secRoiTop} to {secRoiBot} cm) for core {corename}. This is a composite record, so we'll just ignore those depths for now."))
-          cm <- cm[-which(secRoiBot < cm)]
+          warning(glue::glue("At least one requested depth ({badDepth[1]} cm) is outside the ROI range ({secRoiTop} to {secRoiBot} cm) for core {corename}. This is a composite record, so we'll just ignore those depths for now."))
+          inRange <- which(secRoiBot < cm)
+          cm <- cm[-inRange]
+
           if(length(cm) == 0){
             stop("After removing depths outside the range, there were no depths left.")
           }
@@ -221,11 +223,14 @@ coreSection_to_dblf <- function(corename,cm,extraAllowedBottom = 1,extraAllowedT
     compacted <- FALSE
   }
 
-  return(data.frame(dblf = dblf,
+  return(data.frame(corename = corename,
+                    coreSectionDepth = cm,
+                    dblf = dblf,
                     topSource = section$topSource[1],
                     botSource = section$botSource[1],
                     coreName = corename,
-                    compactionAdjusted = compacted))
+                    compactionAdjusted = compacted,
+                    compositeSequence = isComposite))
 
 }
 
