@@ -1,6 +1,7 @@
 # Lakes380CoreDepthTools 0.15.3
 
 * Added core section depth and core section to the output of coreSection_to_dblf()
+* Added compositing recognition to hsi_to_dblf()
 
 # Lakes380CoreDepthTools 0.15.2
 

@@ -360,7 +360,33 @@ hsi_to_dblf <- function(corename,cm,extraAllowedBottom = 1){
   }
 
   #find the relevant core section row
-  section <- dplyr::filter(finalKey,tolower(corename) == tolower(`Section Name`))
+  #check to see if it's part of a master composite
+  if(tolower(corename) %in% tolower(finalKey$`Original Section Name`)){
+    isComposite <- TRUE
+    #determine master corename by name and depth
+    section <- dplyr::filter(finalKey,tolower(corename) == tolower(`Original Section Name`))
+    # if(nrow(section) > 1){
+    #   goodRow <- c()
+    #   for(r in 1:nrow(section)){
+    #     goodRow[r] <- all(between(cm,section$roiTop[r],section$roiBot[r]))
+    #   }
+    #
+    #   if(sum(goodRow) == 1){#we found it!
+    #     section <- section[goodRow,]
+    #   }else if(sum(goodRow) == 0){
+    #     stop(glue::glue("Couldn't find any master core sections that match this name and depth range, perhaps you entered the wrong depth(s)"))
+    #   }else{
+    #     stop(glue::glue("Found multiple master core sections that match this name and depth range, this seems like a problem with the depth table."))
+    #   }
+    #
+    # }
+
+  }else{
+    #find the relevant core section row
+    isComposite <- FALSE
+
+    section <- dplyr::filter(finalKey,tolower(corename) == tolower(`Section Name`))
+  }
 
   if(nrow(section) == 0){
     stop(glue::glue("Couldn't find a core section named {corename}. Search for corenames with `findCoreSectionName()`, or for a list of known core sections run `listCoreSectionNames()`"))
