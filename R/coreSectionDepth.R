@@ -92,6 +92,7 @@ coreSection_to_dblf <- function(corename,cm,extraAllowedBottom = 1,extraAllowedT
 
   #check to see if it's part of a master composite
   if(tolower(corename) %in% tolower(finalKey$`Original Section Name`)){
+    isComposite <- TRUE
     #determine master corename by name and depth
     section <- dplyr::filter(finalKey,tolower(corename) == tolower(`Original Section Name`))
     if(nrow(section) > 1){
@@ -112,6 +113,8 @@ coreSection_to_dblf <- function(corename,cm,extraAllowedBottom = 1,extraAllowedT
 
   }else{
     #find the relevant core section row
+    isComposite <- FALSE
+
     section <- dplyr::filter(finalKey,tolower(corename) == tolower(`Section Name`))
   }
 
@@ -131,7 +134,9 @@ coreSection_to_dblf <- function(corename,cm,extraAllowedBottom = 1,extraAllowedT
   #check for compaction adjustment
   compact <- FALSE
   if(!is.na(section$compact) & !is.na(section$compactOver)){
-    compact <- TRUE
+    if(is.numeric(section$compact) & is.numeric(section$compactOver)){
+      compact <- TRUE
+    }
   }
 
 
@@ -151,14 +156,34 @@ coreSection_to_dblf <- function(corename,cm,extraAllowedBottom = 1,extraAllowedT
     if(is.numeric(secRoiBot)){
       if(any(secRoiBot < cm)){
         badDepth <- cm[which(secRoiBot < cm)]
+        if(isComposite){
+          warning(glue::glue("At least one requested depth ({badDepth[1]} cm) is below the ROI range ({secRoiTop} to {secRoiBot} cm) for core {corename}. This is a composite record, so we'll just ignore those depths for now."))
+          cm <- cm[-which(secRoiBot < cm)]
+          if(length(cm) == 0){
+            stop("After removing depths outside the range, there were no depths left.")
+          }
+
+        }else{
         stop(glue::glue("At least one requested depth ({badDepth[1]} cm) is below the ROI range ({secRoiTop} to {secRoiBot} cm) for core {corename}"))
+        }
       }
     }
   }else{#check for both
     if(is.numeric(secRoiBot)){
       if(any(secRoiBot < cm | secRoiTop > cm)){
         badDepth <- cm[which(secRoiBot < cm | secRoiTop > cm)]
+        if(isComposite){
+          warning(glue::glue("At least one requested depth ({badDepth[1]} cm) is outside the ROI range ({secRoiTop} to {secRoiBot} cm) for core {corename}. This is a composite record, so we'll just ignore those depths for now."))
+          inRange <- which(secRoiBot < cm)
+          cm <- cm[-inRange]
+
+          if(length(cm) == 0){
+            stop("After removing depths outside the range, there were no depths left.")
+          }
+
+        }else{
         stop(glue::glue("At least one requested depth ({badDepth[1]} cm) is outside the ROI range ({secRoiTop} to {secRoiBot} cm) for core {corename}"))
+        }
       }
     }
   }
@@ -198,11 +223,14 @@ coreSection_to_dblf <- function(corename,cm,extraAllowedBottom = 1,extraAllowedT
     compacted <- FALSE
   }
 
-  return(data.frame(dblf = dblf,
+  return(data.frame(corename = corename,
+                    coreSectionDepth = cm,
+                    dblf = dblf,
                     topSource = section$topSource[1],
                     botSource = section$botSource[1],
                     coreName = corename,
-                    compactionAdjusted = compacted))
+                    compactionAdjusted = compacted,
+                    compositeSequence = isComposite))
 
 }
 
@@ -332,7 +360,33 @@ hsi_to_dblf <- function(corename,cm,extraAllowedBottom = 1){
   }
 
   #find the relevant core section row
-  section <- dplyr::filter(finalKey,tolower(corename) == tolower(`Section Name`))
+  #check to see if it's part of a master composite
+  if(tolower(corename) %in% tolower(finalKey$`Original Section Name`)){
+    isComposite <- TRUE
+    #determine master corename by name and depth
+    section <- dplyr::filter(finalKey,tolower(corename) == tolower(`Original Section Name`))
+    # if(nrow(section) > 1){
+    #   goodRow <- c()
+    #   for(r in 1:nrow(section)){
+    #     goodRow[r] <- all(between(cm,section$roiTop[r],section$roiBot[r]))
+    #   }
+    #
+    #   if(sum(goodRow) == 1){#we found it!
+    #     section <- section[goodRow,]
+    #   }else if(sum(goodRow) == 0){
+    #     stop(glue::glue("Couldn't find any master core sections that match this name and depth range, perhaps you entered the wrong depth(s)"))
+    #   }else{
+    #     stop(glue::glue("Found multiple master core sections that match this name and depth range, this seems like a problem with the depth table."))
+    #   }
+    #
+    # }
+
+  }else{
+    #find the relevant core section row
+    isComposite <- FALSE
+
+    section <- dplyr::filter(finalKey,tolower(corename) == tolower(`Section Name`))
+  }
 
   if(nrow(section) == 0){
     stop(glue::glue("Couldn't find a core section named {corename}. Search for corenames with `findCoreSectionName()`, or for a list of known core sections run `listCoreSectionNames()`"))
