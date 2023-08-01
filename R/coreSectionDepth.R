@@ -96,19 +96,17 @@ coreSection_to_dblf <- function(corename,cm,extraAllowedBottom = 1,extraAllowedT
     #determine master corename by name and depth
     section <- dplyr::filter(finalKey,tolower(corename) == tolower(`Original Section Name`))
     if(nrow(section) > 1){
-      goodRow <- c()
+      whichSection <- c()
       for(r in 1:nrow(section)){
-        goodRow[r] <- all(between(cm,section$roiTop[r],section$roiBot[r]))
+        ts <- which(dplyr::between(cm,section$roiTop[r],section$roiBot[r]))
+        if(length(ts) > 0){
+          whichSection[ts] <- r
+        }
       }
 
-      if(sum(goodRow) == 1){#we found it!
-        section <- section[goodRow,]
-      }else if(sum(goodRow) == 0){
+      if(all(is.na(whichSection))){
         stop(glue::glue("Couldn't find any master core sections that match this name and depth range, perhaps you entered the wrong depth(s)"))
-      }else{
-        stop(glue::glue("Found multiple master core sections that match this name and depth range, this seems like a problem with the depth table."))
       }
-
     }
 
   }else{
@@ -116,116 +114,125 @@ coreSection_to_dblf <- function(corename,cm,extraAllowedBottom = 1,extraAllowedT
     isComposite <- FALSE
 
     section <- dplyr::filter(finalKey,tolower(corename) == tolower(`Section Name`))
-  }
 
-  if(nrow(section) == 0){
-    stop(glue::glue("Couldn't find a core section named {corename}. Search for corenames with `findCoreSectionName`, or for a list of known core sections run `listCoreSectionNames()`"))
-  }
 
-  if(nrow(section) > 1){
-    stop("Multiple core section matches. This shouldn't happen")
-  }
-
-  # Get key metadata
-  secTopDblf <- section$secTopDblf[1]
-  secRoiTop <- section$roiTop[1]
-  secRoiBot <- section$roiBot[1]
-
-  #check for compaction adjustment
-  compact <- FALSE
-  if(!is.na(section$compact) & !is.na(section$compactOver)){
-    if(is.numeric(section$compact) & is.numeric(section$compactOver)){
-      compact <- TRUE
+    if(nrow(section) == 0){
+      stop(glue::glue("Couldn't find a core section named {corename}. Search for corenames with `findCoreSectionName`, or for a list of known core sections run `listCoreSectionNames()`"))
     }
+
+    if(nrow(section) > 1){
+      stop("Multiple core section matches. This shouldn't happen")
+    }
+    whichSection <- rep(1,times = length(cm))
   }
 
+  #find which sections to use:
+  uws <- as.numeric(na.omit(unique(whichSection)))
+  alldblf <- matrix(NA,nrow = length(cm))
+  for(tuws in uws){
+    # Get key metadata
+    secTopDblf <- section$secTopDblf[tuws]
+    secRoiTop <- section$roiTop[tuws]
+    secRoiBot <- section$roiBot[tuws]
 
-  #adjust to top depth if within extraAllowedTop cm.
-  if(any(between(cm - secRoiTop,-extraAllowedTop,0))){
-    tc <- which(between(cm - secRoiTop,-extraAllowedTop,0))
-    cm[tc] <- secRoiTop
-  }
+    #check for compaction adjustment
+    compact <- FALSE
+    if(!is.na(section$compact[tuws]) & !is.na(section$compactOver[tuws])){
+      if(is.numeric(section$compact[tuws]) & is.numeric(section$compactOver[tuws])){
+        compact <- TRUE
+      }
+    }
 
-  #adjust to bottom depth if within extraAllowedBottom cm.
-  if(any(between(secRoiBot - cm,-extraAllowedBottom,0))){
-    tc <- which(between(secRoiBot - cm,-extraAllowedBottom,0))
-    cm[tc] <- secRoiBot
-  }
+    tcm <- cm[which(whichSection == tuws)]
 
-  if(compact){#check for bottom depth
-    if(is.numeric(secRoiBot)){
-      if(any(secRoiBot < cm)){
-        badDepth <- cm[which(secRoiBot < cm)]
-        if(isComposite){
-          warning(glue::glue("At least one requested depth ({badDepth[1]} cm) is below the ROI range ({secRoiTop} to {secRoiBot} cm) for core {corename}. This is a composite record, so we'll just ignore those depths for now."))
-          cm <- cm[-which(secRoiBot < cm)]
-          if(length(cm) == 0){
-            stop("After removing depths outside the range, there were no depths left.")
+    #adjust to top depth if within extraAllowedTop cm.
+    if(any(between(tcm - secRoiTop,-extraAllowedTop,0))){
+      tc <- which(between(tcm - secRoiTop,-extraAllowedTop,0))
+      tcm[tc] <- secRoiTop
+    }
+
+    #adjust to bottom depth if within extraAllowedBottom cm.
+    if(any(between(secRoiBot - tcm,-extraAllowedBottom,0))){
+      tc <- which(between(secRoiBot - tcm,-extraAllowedBottom,0))
+      tcm[tc] <- secRoiBot
+    }
+
+    if(compact){#check for bottom depth
+      if(is.numeric(secRoiBot)){
+        if(any(secRoiBot < tcm)){
+          badDepth <- tcm[which(secRoiBot < tcm)]
+          if(isComposite){
+            warning(glue::glue("At least one requested depth ({badDepth[1]} cm) is below the ROI range ({secRoiTop} to {secRoiBot} cm) for core {corename}. This is a composite record, so we'll just ignore those depths for now."))
+            tcm <- tcm[-which(secRoiBot < tcm)]
+            if(length(tcm) == 0){
+              stop("After removing depths outside the range, there were no depths left.")
+            }
+
+          }else{
+            stop(glue::glue("At least one requested depth ({badDepth[1]} cm) is below the ROI range ({secRoiTop} to {secRoiBot} cm) for core {corename}"))
           }
+        }
+      }
+    }else{#check for both
+      if(is.numeric(secRoiBot)){
+        if(any(secRoiBot < tcm | secRoiTop > tcm)){
+          badDepth <- tcm[which(secRoiBot < tcm | secRoiTop > tcm)]
+          if(isComposite){
+            warning(glue::glue("At least one requested depth ({badDepth[1]} cm) is outside the ROI range ({secRoiTop} to {secRoiBot} cm) for core {corename}. This is a composite record, so we'll just ignore those depths for now."))
+            inRange <- which(secRoiBot < tcm)
+            tcm <- tcm[-inRange]
 
-        }else{
-        stop(glue::glue("At least one requested depth ({badDepth[1]} cm) is below the ROI range ({secRoiTop} to {secRoiBot} cm) for core {corename}"))
+            if(length(tcm) == 0){
+              stop("After removing depths outside the range, there were no depths left.")
+            }
+
+          }else{
+            stop(glue::glue("At least one requested depth ({badDepth[1]} cm) is outside the ROI range ({secRoiTop} to {secRoiBot} cm) for core {corename}"))
+          }
         }
       }
     }
-  }else{#check for both
-    if(is.numeric(secRoiBot)){
-      if(any(secRoiBot < cm | secRoiTop > cm)){
-        badDepth <- cm[which(secRoiBot < cm | secRoiTop > cm)]
-        if(isComposite){
-          warning(glue::glue("At least one requested depth ({badDepth[1]} cm) is outside the ROI range ({secRoiTop} to {secRoiBot} cm) for core {corename}. This is a composite record, so we'll just ignore those depths for now."))
-          inRange <- which(secRoiBot < cm)
-          cm <- cm[-inRange]
 
-          if(length(cm) == 0){
-            stop("After removing depths outside the range, there were no depths left.")
-          }
 
-        }else{
-        stop(glue::glue("At least one requested depth ({badDepth[1]} cm) is outside the ROI range ({secRoiTop} to {secRoiBot} cm) for core {corename}"))
-        }
-      }
+    if(!is.numeric(secTopDblf) | !is.numeric(secRoiTop)){
+      stop("missing metadata for core {corename}, cannot calculate depth below lake floor")
     }
-  }
 
+    #then calculate
+    dblf <- tcm - secRoiTop + secTopDblf
 
-  if(!is.numeric(secTopDblf) | !is.numeric(secRoiTop)){
-    stop("missing metadata for core {corename}, cannot calculate depth below lake floor")
-  }
-
-  #then calculate
-  dblf <- cm - secRoiTop + secTopDblf
-
-  if(compact){
-    compacted <- c()
-    for(icm in 1:length(cm)){
-      if(any(is.na(suppressWarnings(as.numeric(section$compactOver))))){
-        compactThis <- FALSE
-      }else{
-        if(dblf[icm] > as.numeric(section$compactOver)){
+    if(compact){
+      compacted <- c()
+      for(icm in 1:length(tcm)){
+        if(any(is.na(suppressWarnings(as.numeric(section$compactOver[tuws]))))){
           compactThis <- FALSE
         }else{
-          compactThis <- TRUE
+          if(dblf[icm] > as.numeric(section$compactOver[tuws])){
+            compactThis <- FALSE
+          }else{
+            compactThis <- TRUE
+          }
         }
-      }
 
-      #compact if necessary
-      if(compactThis){
-        dblf[icm] <- adjustForCompaction(dblf[icm],
-                                         maxCompact = as.numeric(section$compact),
-                                         compactOver = as.numeric(section$compactOver)
-        )
-      }
+        #compact if necessary
+        if(compactThis){
+          dblf[icm] <- adjustForCompaction(dblf[icm],
+                                           maxCompact = as.numeric(section$compact[tuws]),
+                                           compactOver = as.numeric(section$compactOver[tuws])
+          )
+        }
 
-      compacted[icm] <- compactThis
+        compacted[icm] <- compactThis
+      }
+    }else{
+      compacted <- FALSE
     }
-  }else{
-    compacted <- FALSE
-  }
+    alldblf[which(whichSection == tuws)] <- dblf
 
+  }
   return(data.frame(corename = corename,
                     coreSectionDepth = cm,
-                    dblf = dblf,
+                    dblf = alldblf,
                     topSource = section$topSource[1],
                     botSource = section$botSource[1],
                     coreName = corename,
@@ -364,7 +371,13 @@ hsi_to_dblf <- function(corename,cm,extraAllowedBottom = 1){
   if(tolower(corename) %in% tolower(finalKey$`Original Section Name`)){
     isComposite <- TRUE
     #determine master corename by name and depth
-    section <- dplyr::filter(finalKey,tolower(corename) == tolower(`Original Section Name`))
+    sectionComposite <- dplyr::filter(finalKey,tolower(corename) == tolower(`Original Section Name`))
+    section <- dplyr::filter(finalKey,tolower(corename) == tolower(`Section Name`))
+
+    # Get key metadata
+    secTopDblf <- section$secTopDblf[1]
+    secRoiTop <- max(section$roiTop[1],sectionComposite$roiTop[1])
+    secRoiBot <- section$roiBot[1]
     # if(nrow(section) > 1){
     #   goodRow <- c()
     #   for(r in 1:nrow(section)){
@@ -386,6 +399,11 @@ hsi_to_dblf <- function(corename,cm,extraAllowedBottom = 1){
     isComposite <- FALSE
 
     section <- dplyr::filter(finalKey,tolower(corename) == tolower(`Section Name`))
+
+    # Get key metadata
+    secTopDblf <- section$secTopDblf[1]
+    secRoiTop <- section$roiTop[1]
+    secRoiBot <- section$roiBot[1]
   }
 
   if(nrow(section) == 0){
@@ -396,13 +414,10 @@ hsi_to_dblf <- function(corename,cm,extraAllowedBottom = 1){
     stop("Multiple core section matches. This shouldn't happen")
   }
 
-  # Get key metadata
-  secTopDblf <- section$secTopDblf[1]
-  secRoiTop <- section$roiTop[1]
-  secRoiBot <- section$roiBot[1]
 
 
-#convert to core liner
+
+  #convert to core liner
   clDepth <- cm + secRoiTop
 
   # #adjust to bottom depth if within 1 cm.
@@ -437,11 +452,11 @@ hsi_to_dblf <- function(corename,cm,extraAllowedBottom = 1){
   #
   # #then calculate
   # dblf <- cm + secTopDblf
-#
-#   return(data.frame(dblf = dblf,
-#                     topSource = section$topSource[1],
-#                     botSource = section$botSource[1],
-#                     coreName = corename))
+  #
+  #   return(data.frame(dblf = dblf,
+  #                     topSource = section$topSource[1],
+  #                     botSource = section$botSource[1],
+  #                     coreName = corename))
 
 }
 
