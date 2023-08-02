@@ -1,3 +1,5 @@
+# Lakes380CoreDepthTools 0.16.0
+
 # Lakes380CoreDepthTools 0.15.3
 
 * Added core section depth and core section to the output of coreSection_to_dblf()
