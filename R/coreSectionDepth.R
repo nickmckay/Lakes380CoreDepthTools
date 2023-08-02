@@ -90,6 +90,8 @@ coreSection_to_dblf <- function(corename,cm,extraAllowedBottom = 1,extraAllowedT
     stop("more than one corename was entered. To calculate depths from multiple sections, use multi_coreSection_to_dblf")
   }
 
+  whichSection <- rep(1,times = length(cm))
+
   #check to see if it's part of a master composite
   if(tolower(corename) %in% tolower(finalKey$`Original Section Name`)){
     isComposite <- TRUE
@@ -123,7 +125,6 @@ coreSection_to_dblf <- function(corename,cm,extraAllowedBottom = 1,extraAllowedT
     if(nrow(section) > 1){
       stop("Multiple core section matches. This shouldn't happen")
     }
-    whichSection <- rep(1,times = length(cm))
   }
 
   #find which sections to use:

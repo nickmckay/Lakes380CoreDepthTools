@@ -1,5 +1,8 @@
 # Lakes380CoreDepthTools 0.16.0
 
+* Changed `hsi_to_dblf()` to use maximum (deeper) of compositeRoi top and HSI roi top to avoid situation where composite depth starts above top of HSI depth. 
+* changed `coreSection_to_dblf()` to allow multiple composite sections from same core
+
 # Lakes380CoreDepthTools 0.15.3
 
 * Added core section depth and core section to the output of coreSection_to_dblf()
