@@ -1,3 +1,5 @@
+# Lakes380CoreDepthTools 0.17.0
+
 # Lakes380CoreDepthTools 0.16.0
 
 * Changed `hsi_to_dblf()` to use maximum (deeper) of compositeRoi top and HSI roi top to avoid situation where composite depth starts above top of HSI depth. 
