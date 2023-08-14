@@ -97,19 +97,18 @@ coreSection_to_dblf <- function(corename,cm,extraAllowedBottom = 1,extraAllowedT
     isComposite <- TRUE
     #determine master corename by name and depth
     section <- dplyr::filter(finalKey,tolower(corename) == tolower(`Original Section Name`))
-    if(nrow(section) > 1){
-      whichSection <- c()
-      for(r in 1:nrow(section)){
-        ts <- which(dplyr::between(cm,section$roiTop[r],section$roiBot[r]))
-        if(length(ts) > 0){
-          whichSection[ts] <- r
-        }
-      }
-
-      if(all(is.na(whichSection))){
-        stop(glue::glue("Couldn't find any master core sections that match this name and depth range, perhaps you entered the wrong depth(s)"))
+    whichSection <- c()
+    for(r in 1:nrow(section)){
+      ts <- which(dplyr::between(cm,section$roiTop[r],section$roiBot[r]))
+      if(length(ts) > 0){
+        whichSection[ts] <- r
       }
     }
+
+    if(all(is.na(whichSection))){
+      stop(glue::glue("Couldn't find any master core sections that match this name and depth range, perhaps you entered the wrong depth(s)"))
+    }
+
 
   }else{
     #find the relevant core section row
@@ -200,7 +199,7 @@ coreSection_to_dblf <- function(corename,cm,extraAllowedBottom = 1,extraAllowedT
     }
 
     #then calculate
-    dblf <- tcm - secRoiTop + secTopDblf
+    dblf <- tcm - secRoiTop + secTopDblf #add in modifier for difference between HSI ROI and chron ROI?
 
     if(compact){
       compacted <- c()
@@ -377,7 +376,7 @@ hsi_to_dblf <- function(corename,cm,extraAllowedBottom = 1){
 
     # Get key metadata
     secTopDblf <- section$secTopDblf[1]
-    secRoiTop <- max(section$roiTop[1],sectionComposite$roiTop[1])
+    secRoiTop <- section$roiTop[1]
     secRoiBot <- section$roiBot[1]
     # if(nrow(section) > 1){
     #   goodRow <- c()
